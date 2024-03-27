@@ -1,4 +1,4 @@
-package com.kinpo.acchao
+package com.acchao.portfolio
 
 import org.junit.Test
 
