@@ -21,8 +21,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,7 +57,7 @@ fun Portfolio(
     viewModel: PortfolioViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
-    var seenSplash: Boolean by rememberSaveable { viewModel.hasSeenSplash }
+    val seenSplash by viewModel.hasSeenSplash.observeAsState(initial = false)
     if (!seenSplash) {
         SplashScreen()
     } else {
