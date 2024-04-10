@@ -32,7 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.acchao.portfolio.ui.theme.PortfolioTheme
 import com.acchao.portfolio.viewmodel.PortfolioViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,11 +59,10 @@ fun Portfolio(
     viewModel: PortfolioViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
-    val seenSplash by viewModel.hasSeenSplash.observeAsState(initial = false)
-    if (!seenSplash) {
-        SplashScreen()
-    } else {
+    if (viewModel.seenSplash.observeAsState().value == true) {
         HomeScreen()
+    } else {
+        SplashScreen()
     }
 }
 
@@ -70,6 +71,7 @@ fun SplashScreen(
     viewModel: PortfolioViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
+
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
         modifier = modifier.fillMaxWidth()
@@ -141,7 +143,9 @@ fun SplashScreen(
             }
 
             Spacer(Modifier.padding(48.dp))
-            Button(onClick = {}) {
+            Button(onClick = {
+                viewModel.setHasSeenOnboarding()
+            }) {
                 Text("Latest Updates")
             }
         }
@@ -150,7 +154,7 @@ fun SplashScreen(
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
-
+    Text("Home screen")
 }
 
 @Composable
