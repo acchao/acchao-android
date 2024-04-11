@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">WhatChaoUpTo</string>
+    <string name="intro">Welcome to my portfolio app. While the intent is to showcase myself as an Android engineer, this is also my development playground to learn and practice the latest Android paradigms.</string>
+    <string name="status">Status:</string>
+    <string name="looking_for_work">Looking for work</string>
+    <string name="andrew_chao">Andrew Chao</string>
+
 </resources>
