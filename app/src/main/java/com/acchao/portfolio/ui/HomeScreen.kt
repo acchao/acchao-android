@@ -90,6 +90,9 @@ fun HomeContent(
     resumeState: PortfolioViewModel.ResumeUiState,
     innerPadding: PaddingValues,
     modifier: Modifier = Modifier) {
+    // TODO: explore implementation of AndroidView() so we can leverage a recyclerview which currently
+    // has better scroll performance.
+    // https://medium.com/androiddevelopers/jetpack-compose-interop-using-compose-in-a-recyclerview-569c7ec7a583
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier

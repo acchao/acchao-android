@@ -138,6 +138,59 @@ val listOfExperience = listOf(
             ),
         )
     ),
+    Experience(
+        title = "Software Engineer (Mobile/Platform Team)",
+        company = "Quora",
+        location = "Mountain View",
+        start = "2013-07-15",
+        end = "2016-05-16",
+        skills = listOf(Skill("Android"), Skill("Java"), Skill("Python"),
+            Skill("Javascript"), Skill("MySql")),
+        bullets = listOf(
+            Bullet(
+                description = "As the Android lead, responsible for all platform features and " +
+                        "ensuring designs are Android centric",
+                key = true
+            ),
+            Bullet(
+                description = "Helped re-write the Android app as part of a major web view based " +
+                        "redesign of all apps (mobile web included) and designed the custom " +
+                        "javascript UI API across mobile. This system design is still in use.",
+                key = true
+            ),
+            Bullet(
+                description = "Wrote the first version of rich text editing on Android",
+                key = true
+            ),
+            Bullet(
+                description = "Designed and built the first rendition of “Read Later” feature on Quora during a hack week",
+                key = true
+            ),
+            Bullet(
+                description = "Deployed a robust push notification system with an internal portal for testing them",
+                key = true
+            ),
+            Bullet(
+                description = "Implemented a server side code deployment system to handle delayed and asynchronous tasks",
+                key = true
+            )
+        )
+    ),
+    Experience(
+        title = "Engineering Intern",
+        company = "Quora",
+        location = "Palo Alto",
+        start = "2012-05-15",
+        end = "2012-08-16",
+        skills = listOf(Skill("Android"), Skill("Java"), Skill("Python"),
+            Skill("Javascript"), Skill("MySql"), Skill("SqlLite")),
+        bullets = listOf(
+            Bullet(
+                description = "Developed the first Quora Android App with one other engineer over 3 months",
+                key = true
+            ),
+        )
+    ),
 )
 
 val listOfSkills = listOf(
