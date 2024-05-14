@@ -33,7 +33,7 @@ class PortfolioRepository(private val context: Context) {
 
     suspend fun setHasSeenOnboarding(hasSeen: Boolean) {
         context.dataStore.edit {
-            it[SEEN_SPLASH_KEY] = true
+            it[SEEN_SPLASH_KEY] = hasSeen
         }
     }
 

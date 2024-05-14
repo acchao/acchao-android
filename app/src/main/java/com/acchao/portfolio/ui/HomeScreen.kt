@@ -1,5 +1,6 @@
 package com.acchao.portfolio.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
 import androidx.compose.material.Chip
@@ -25,6 +28,7 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -57,7 +61,6 @@ import com.acchao.portfolio.ui.theme.LightGrey
 import com.acchao.portfolio.ui.theme.PortfolioTheme
 import com.acchao.portfolio.viewmodel.PortfolioViewModel
 import com.acchao.portfolio.viewmodel.PortfolioViewModel.ResumeUiState
-import kotlin.math.max
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,62 +90,79 @@ fun HomeContent(
     resumeState: PortfolioViewModel.ResumeUiState,
     innerPadding: PaddingValues,
     modifier: Modifier = Modifier) {
-    Column(
-        modifier
-            .padding(8.dp)
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = modifier
+            .padding(innerPadding)
+            .padding(horizontal = 12.dp)
             .fillMaxSize()
     ) {
-        Intro()
-        StatusBar()
-        ResumeSection(resumeState)
+
+        intro()
+        statusBar()
+        resumeSection(resumeState)
     }
 }
 
-@Composable
-fun ResumeSection(
+
+fun LazyListScope.resumeSection(
     resumeState: ResumeUiState,
     modifier: Modifier = Modifier
 ) {
     when (resumeState) {
         ResumeUiState.Loading -> {
-            Box(modifier) {
-                Text("Oops, wait a minute... I'm pretty sure I have more experience than this")
+            item {
+                Box(modifier) {
+                    Text("Oops, wait a minute... I'm pretty sure I have more experience than this")
+                }
             }
         }
         is ResumeUiState.Success -> {
-            Column(modifier) {
+            item {
                 Title("Skills")
                 SkillsRow(resumeState.portfolio.skills.toSet(), showYears = true)
-                Title("Experience")
-                ExperienceSection(resumeState.portfolio.experience)
-                Title("Education")
-                EducationSection(resumeState.portfolio.education)
             }
+            stickyTitle("Experience")
+            experienceSection(resumeState.portfolio.experience)
+            stickyTitle("Education")
+            educationSection(resumeState.portfolio.education)
         }
     }
 }
 
-@Composable
-fun Intro(modifier: Modifier = Modifier) {
-    Text(stringResource(R.string.intro), modifier)
-}
-
-@Composable
-fun StatusBar(modifier: Modifier = Modifier) {
-    Row {
-        Text(stringResource(R.string.status))
-        Text(stringResource(R.string.looking_for_work))
+fun LazyListScope.intro(modifier: Modifier = Modifier) {
+    item {
+        Text(stringResource(R.string.intro))
     }
+}
 
+fun LazyListScope.statusBar(modifier: Modifier = Modifier) {
+    item {
+        Row(modifier) {
+            Text(stringResource(R.string.status))
+            Text(stringResource(R.string.looking_for_work))
+        }
+    }
+}
+
+
+@OptIn(ExperimentalFoundationApi::class)
+fun LazyListScope.stickyTitle(titleText: String, modifier: Modifier = Modifier) {
+    stickyHeader {
+        Title(titleText, modifier)
+    }
 }
 
 @Composable
-fun Title(string: String, modifier: Modifier = Modifier) {
-    Text(
-        string,
-        fontWeight = FontWeight.Bold,
-        style = MaterialTheme.typography.h6
-    )
+fun Title(titleText: String, modifier: Modifier = Modifier) {
+    Surface(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            titleText,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.h6,
+            modifier = modifier
+        )
+    }
 }
 
 @Composable
@@ -152,7 +172,10 @@ fun SkillsChart(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier) {
-        items(items = skills, itemContent = {
+        items(
+            items = skills,
+            key = { skill -> skill.id },
+            itemContent = {
             SkillChip(skill = it) {
                 viewModel.addFilter(it)
             }
@@ -169,21 +192,14 @@ fun SkillChip(skill: Skill, onClick: () -> Unit) {
     }
 }
 
-@Composable
-fun SkillBar(skill: Skill) {
-    Row {
-        Text(skill.name)
-        Text(pluralStringResource(id = R.plurals.skill_years, skill.years, skill.years))
-    }
-}
-
-@Composable
-fun ExperienceSection(experiences: List<Experience>, modifier: Modifier = Modifier) {
-    LazyColumn {
-        items(items = experiences, itemContent = {
+fun LazyListScope.experienceSection(experiences: List<Experience>) {
+    items(
+        items = experiences,
+        key = { it.id },
+        itemContent = {
             ExperienceRow(it)
-        })
-    }
+        }
+    )
 }
 
 @Composable
@@ -234,10 +250,9 @@ fun SkillsRow(
     showYears: Boolean = false,
 ) {
     val selectedSkills = remember { mutableStateListOf<Skill>() }
-
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier
+        modifier = modifier
     ) {
         for (skill in skills) {
             SkillPill(
@@ -316,16 +331,18 @@ fun SkillPill(
     }
 }
 
-@Composable
-fun EducationSection(education: List<Education>, modifier: Modifier = Modifier) {
-    Card(modifier) {
-        var size by remember { mutableStateOf(IntSize.Zero) }
-        LazyColumn {
-            items(education, itemContent = {
-                EducationRow(edu = it, alignmentWidth = size.width) { measuredSize ->
-                    size = measuredSize
+
+fun LazyListScope.educationSection(education: List<Education>, modifier: Modifier = Modifier) {
+    item {
+        Card(modifier) {
+            var size by remember { mutableStateOf(IntSize.Zero) }
+            Column {
+                for (edu in education) {
+                    EducationRow(edu = edu, alignmentWidth = size.width) { measuredSize ->
+                        size = measuredSize
+                    }
                 }
-            })
+            }
         }
     }
 }
