@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
@@ -40,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -59,6 +57,7 @@ import com.acchao.portfolio.data.listOfExperience
 import com.acchao.portfolio.data.portfolio
 import com.acchao.portfolio.ui.theme.LightGrey
 import com.acchao.portfolio.ui.theme.PortfolioTheme
+import com.acchao.portfolio.ui.theme.Teal
 import com.acchao.portfolio.viewmodel.PortfolioViewModel
 import com.acchao.portfolio.viewmodel.PortfolioViewModel.ResumeUiState
 
@@ -103,12 +102,12 @@ fun HomeContent(
 
         intro()
         statusBar()
-        resumeSection(resumeState)
+        filterableResume(resumeState)
     }
 }
 
 
-fun LazyListScope.resumeSection(
+fun LazyListScope.filterableResume(
     resumeState: ResumeUiState,
     modifier: Modifier = Modifier
 ) {
@@ -122,6 +121,7 @@ fun LazyListScope.resumeSection(
         }
         is ResumeUiState.Success -> {
             item {
+
                 Title("Skills")
                 SkillsRow(resumeState.portfolio.skills.toSet(), showYears = true)
             }
@@ -207,6 +207,8 @@ fun LazyListScope.experienceSection(experiences: List<Experience>) {
 
 @Composable
 fun ExperienceRow(experience: Experience) {
+    val selectedSkills = remember { mutableStateListOf<Skill>() }
+
     Card {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(modifier = Modifier.fillMaxWidth()) {
@@ -221,7 +223,13 @@ fun ExperienceRow(experience: Experience) {
                 )
             }
             Text(experience.company)
-            SkillsRow(experience.skills.toSet())
+            SkillsRow(experience.skills.toSet(), selectedSkills = selectedSkills) {
+                if (selectedSkills.contains(it)) {
+                    selectedSkills.remove(it)
+                } else {
+                    selectedSkills.add(it)
+                }
+            }
             for (bullet in experience.bullets) {
                 Bullet(bullet)
             }
@@ -251,8 +259,9 @@ fun SkillsRow(
     skills: Set<Skill>,
     modifier: Modifier = Modifier,
     showYears: Boolean = false,
+    selectedSkills: List<Skill> = emptyList(),
+    updateSelectedSkills: (Skill) -> Unit = {},
 ) {
-    val selectedSkills = remember { mutableStateListOf<Skill>() }
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
@@ -262,13 +271,7 @@ fun SkillsRow(
                 skill = skill,
                 isSelected = selectedSkills.contains(skill),
                 expand = showYears,
-                onClick = {
-                    if (selectedSkills.contains(it)) {
-                        selectedSkills.remove(it)
-                    } else {
-                        selectedSkills.add(it)
-                    }
-                }
+                onClick = updateSelectedSkills
             )
         }
     }
@@ -298,7 +301,8 @@ fun SkillPill(
 
     if (expand) {
         ElevatedButton(
-            onClick = { onClick(skill) }
+            onClick = { onClick(skill) },
+            modifier
         ) {
             Text(
                 text = pillText
@@ -306,7 +310,7 @@ fun SkillPill(
         }
     } else {
         val containerColor = if(isSelected) {
-            colorResource(id = R.color.teal_200)
+            Teal
         } else {
             LightGrey
         }
@@ -324,7 +328,7 @@ fun SkillPill(
                 contentColor = textColor
             ),
             contentPadding = PaddingValues(vertical = 4.dp, horizontal = 12.dp),
-            modifier = Modifier
+            modifier = modifier
                 .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
         ) {
             Text(
