@@ -25,6 +25,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <data android:scheme="https" android:host="www.whatchaoupto.com" />
+            </intent-filter>
+            <intent-filter>
+                <data android:scheme="https" android:host="www.acchao.com" />
+            </intent-filter>
         </activity>
     </application>
 
