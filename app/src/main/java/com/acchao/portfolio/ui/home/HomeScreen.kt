@@ -1,4 +1,4 @@
-package com.acchao.portfolio.ui
+package com.acchao.portfolio.ui.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.acchao.portfolio.R
@@ -58,12 +59,14 @@ import com.acchao.portfolio.data.portfolio
 import com.acchao.portfolio.ui.theme.LightGrey
 import com.acchao.portfolio.ui.theme.PortfolioTheme
 import com.acchao.portfolio.ui.theme.Teal
-import com.acchao.portfolio.viewmodel.PortfolioViewModel
-import com.acchao.portfolio.viewmodel.PortfolioViewModel.ResumeUiState
+import com.acchao.portfolio.ui.home.PortfolioViewModel.ResumeUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: PortfolioViewModel = viewModel(), modifier: Modifier = Modifier) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    viewModel: PortfolioViewModel = hiltViewModel()
+) {
 
     val portfolioState by viewModel.portfolio.collectAsStateWithLifecycle()
 
@@ -86,7 +89,7 @@ fun HomeScreen(viewModel: PortfolioViewModel = viewModel(), modifier: Modifier =
 
 @Composable
 fun HomeContent(
-    resumeState: PortfolioViewModel.ResumeUiState,
+    resumeState: ResumeUiState,
     innerPadding: PaddingValues,
     modifier: Modifier = Modifier) {
     // TODO: explore implementation of AndroidView() so we can leverage a recyclerview which currently
@@ -171,7 +174,7 @@ fun Title(titleText: String, modifier: Modifier = Modifier) {
 @Composable
 fun SkillsChart(
     skills: List<Skill>,
-    viewModel: PortfolioViewModel = viewModel(),
+    viewModel: PortfolioViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier) {

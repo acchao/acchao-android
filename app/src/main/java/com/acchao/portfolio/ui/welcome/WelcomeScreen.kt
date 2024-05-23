@@ -1,4 +1,4 @@
-package com.acchao.portfolio.ui
+package com.acchao.portfolio.ui.welcome
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -22,16 +22,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.acchao.portfolio.R
 import com.acchao.portfolio.ui.theme.PortfolioTheme
-import com.acchao.portfolio.viewmodel.PortfolioViewModel
 
 
 @Composable
-fun SplashScreen(
-    viewModel: PortfolioViewModel = viewModel(),
-    modifier: Modifier = Modifier
+fun WelcomeScreen(
+    modifier: Modifier = Modifier,
+    welcomeViewModel: WelcomeViewModel = hiltViewModel(),
+    onContinueClicked: () -> Unit,
 ) {
 
     Surface(
@@ -106,7 +107,8 @@ fun SplashScreen(
 
             Spacer(Modifier.padding(48.dp))
             Button(onClick = {
-                viewModel.setHasSeenOnboarding()
+                welcomeViewModel.setHasSeenSplash(true)
+                onContinueClicked()
             }) {
                 Text("Latest Updates")
             }
@@ -118,6 +120,8 @@ fun SplashScreen(
 @Composable
 fun SplashScreenPreview() {
     PortfolioTheme {
-        SplashScreen()
+        WelcomeScreen {
+            // do nothing
+        }
     }
 }

@@ -10,31 +10,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
-private const val PortfolioUserPreferences = "user_preferences"
-
-data class UserPreferences(val hasSeenOnboarding: Boolean)
-
 class PortfolioRepository(private val context: Context) {
-
-    companion object {
-         val SEEN_SPLASH_KEY = booleanPreferencesKey("has_seen_splash")
-    }
-
-    // TODO(Andrew): research if Flow is the ideal type I want to return here
-    fun hasSeenOnboarding() : Flow<Boolean> {
-        return context.dataStore.data.map { preferences ->
-            preferences[SEEN_SPLASH_KEY] ?: false
-        }
-    }
 
     fun getPortfolio(): Flow<Portfolio> = flow {
         emit(portfolio)
-    }
-
-    suspend fun setHasSeenOnboarding(hasSeen: Boolean) {
-        context.dataStore.edit {
-            it[SEEN_SPLASH_KEY] = hasSeen
-        }
     }
 
     private fun isInternetAvailable(context: Context): Boolean {

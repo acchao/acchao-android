@@ -1,6 +1,7 @@
 package com.acchao.portfolio.di
 
 import android.content.Context
+import com.acchao.portfolio.data.DataStoreRepository
 import com.acchao.portfolio.data.PortfolioRepository
 import dagger.Module
 import dagger.Provides
@@ -14,5 +15,10 @@ object RepositoryModule {
     @Provides
     fun providePortfolioRepository(@ApplicationContext appContext: Context): PortfolioRepository {
         return PortfolioRepository(appContext)
+    }
+
+    @Provides
+    fun provideDataStoreRepository(@ApplicationContext appContext: Context): DataStoreRepository {
+        return DataStoreRepository(appContext)
     }
 }

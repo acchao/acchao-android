@@ -62,6 +62,7 @@ dependencies {
 
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.androidx.compose.compiler)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
@@ -71,6 +72,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.dagger.hilt)
+    implementation(libs.androidx.hilt.navigation.compose)
     kapt(libs.dagger.hilt.android.compiler)
     implementation(libs.retrofit)
     implementation(libs.retrofit.jackson)

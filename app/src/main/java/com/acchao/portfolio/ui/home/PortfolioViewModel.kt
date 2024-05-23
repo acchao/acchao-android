@@ -1,4 +1,4 @@
-package com.acchao.portfolio.viewmodel
+package com.acchao.portfolio.ui.home
 
 
 import android.app.Application
@@ -6,7 +6,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.acchao.portfolio.data.DataStoreRepository
 import com.acchao.portfolio.data.Portfolio
 import com.acchao.portfolio.data.PortfolioRepository
 import com.acchao.portfolio.data.Skill
@@ -20,11 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PortfolioViewModel @Inject constructor(
-    private val portfolioRepository: PortfolioRepository,
-    private val application: Application
-) : AndroidViewModel(application) {
-
-    val seenSplash : MutableLiveData<Boolean> = MutableLiveData(false)
+    portfolioRepository: PortfolioRepository
+) : ViewModel() {
 
     val portfolio: StateFlow<ResumeUiState> = portfolioRepository.getPortfolio()
         .map(ResumeUiState::Success)
@@ -33,20 +32,6 @@ class PortfolioViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = ResumeUiState.Loading
         )
-
-    init {
-        viewModelScope.launch {
-            portfolioRepository.hasSeenOnboarding().collect {
-                seenSplash.postValue(it)
-            }
-        }
-    }
-
-    fun setHasSeenOnboarding() {
-        viewModelScope.launch {
-            portfolioRepository.setHasSeenOnboarding(true)
-        }
-    }
 
     private val filteredSkills: MutableList<Skill> = mutableListOf()
     private val _filteredSkills: MutableState<List<Skill>> = mutableStateOf(filteredSkills)
