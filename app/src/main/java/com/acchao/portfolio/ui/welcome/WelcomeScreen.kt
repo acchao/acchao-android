@@ -1,5 +1,12 @@
 package com.acchao.portfolio.ui.welcome
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.animateValue
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,10 +27,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.acchao.portfolio.R
 import com.acchao.portfolio.ui.theme.PortfolioTheme
 
@@ -60,17 +67,10 @@ fun WelcomeScreen(
                         text = "Andrew",
                         style = MaterialTheme.typography.headlineLarge,
                     )
-                    Row {
-                        Text(
-                            text = "Chao",
-                            style = MaterialTheme.typography.headlineLarge,
-                        )
-                        Text(
-                            text = "...",
-                            style = MaterialTheme.typography.headlineLarge,
-                            modifier = Modifier
-                        )
-                    }
+                    TextWithLoadingDots(
+                        "Chao",
+                        style = MaterialTheme.typography.headlineLarge
+                    )
                     Row(
                         modifier = Modifier.padding(top = 24.dp)
                     ) {
@@ -113,6 +113,51 @@ fun WelcomeScreen(
                 Text("Latest Updates")
             }
         }
+    }
+}
+
+@Composable
+fun TextWithLoadingDots(
+    text: String,
+    modifier: Modifier = Modifier,
+    style: TextStyle = MaterialTheme.typography.headlineMedium,
+    isAnimating: Boolean = true,
+) {
+    Row(modifier) {
+        Text(
+            text = text,
+            style = style,
+        )
+
+        val duration = 1500
+        val transition = rememberInfiniteTransition("Dots Transition")
+
+        // Define the animated value for the number of visible dots
+        val visibleDotsCount = transition.animateValue(
+            initialValue = 0,
+            targetValue = 4,
+            typeConverter = Int.VectorConverter,
+            animationSpec = infiniteRepeatable(
+                animation = tween(
+                    durationMillis = duration,
+                    easing = LinearEasing
+                ),
+                repeatMode = RepeatMode.Restart
+            ),
+            label = "Visible Dots Count"
+        )
+
+        val animatedText = if (isAnimating) {
+            "" + ".".repeat(visibleDotsCount.value)
+        } else {
+            ""
+        }
+
+        Text(
+            text = animatedText,
+            style = style,
+            modifier = Modifier
+        )
     }
 }
 
