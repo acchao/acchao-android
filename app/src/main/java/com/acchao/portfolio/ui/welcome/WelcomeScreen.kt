@@ -52,6 +52,13 @@ fun WelcomeScreen(
     onContinueClicked: () -> Unit,
 ) {
     val animationOrder = remember { mutableIntStateOf(0) }
+    val listOfMes = mutableListOf(
+        "senior software engineer",
+        "product engineer",
+        "entrepreneur",
+        "home cook",
+        "fitness enthusiast"
+    )
 
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
@@ -95,7 +102,6 @@ fun WelcomeScreen(
                         Column(
                             horizontalAlignment = Alignment.Start,
                         ) {
-
                             LaunchedEffect(key1 = Unit) {
                                 coroutineScope {
                                     launch {
@@ -107,40 +113,14 @@ fun WelcomeScreen(
                                 }
                             }
 
-                            AnimatedInvisibility(visible = animationOrder.intValue >= 1) {
-                                Text(
-                                    text = "senior software engineer",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = it
-                                )
-                            }
-                            AnimatedInvisibility(visible = animationOrder.intValue >= 2) {
-                                Text(
-                                    text = "product engineer",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = it
-                                )
-                            }
-                            AnimatedInvisibility(visible = animationOrder.intValue >= 3) {
-                                Text(
-                                    text = "entrepreneur",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = it
-                                )
-                            }
-                            AnimatedInvisibility(visible = animationOrder.intValue >= 4) {
-                                Text(
-                                    text = "home cook",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = it
-                                )
-                            }
-                            AnimatedInvisibility(visible = animationOrder.intValue >= 5) {
-                                Text(
-                                    text = "fitness enthusiast",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = it
-                                )
+                            listOfMes.forEachIndexed { index, s ->
+                                AnimatedInvisibility(visible = animationOrder.intValue >= index) {
+                                    Text(
+                                        text = s,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = it
+                                    )
+                                }
                             }
                         }
                     }
@@ -148,7 +128,7 @@ fun WelcomeScreen(
             }
 
             Spacer(Modifier.padding(48.dp))
-            val buttonIsVisible = animationOrder.intValue >= 6
+            val buttonIsVisible = animationOrder.intValue >= listOfMes.size
             val animatedAlpha by animateFloatAsState(
                 targetValue = if (buttonIsVisible) 1.0f else 0f,
                 label = "alpha"
