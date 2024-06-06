@@ -1,6 +1,7 @@
 package com.acchao.portfolio.ui.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
@@ -35,20 +37,24 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.acchao.portfolio.R
 import com.acchao.portfolio.data.Bullet
 import com.acchao.portfolio.data.Education
@@ -59,13 +65,13 @@ import com.acchao.portfolio.data.portfolio
 import com.acchao.portfolio.ui.theme.LightGrey
 import com.acchao.portfolio.ui.theme.PortfolioTheme
 import com.acchao.portfolio.ui.theme.Teal
-import com.acchao.portfolio.ui.home.PortfolioViewModel.ResumeUiState
+import com.acchao.portfolio.ui.home.HomeViewModel.ResumeUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: PortfolioViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
 
     val portfolioState by viewModel.portfolio.collectAsStateWithLifecycle()
@@ -174,7 +180,7 @@ fun Title(titleText: String, modifier: Modifier = Modifier) {
 @Composable
 fun SkillsChart(
     skills: List<Skill>,
-    viewModel: PortfolioViewModel = hiltViewModel(),
+    viewModel: HomeViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier) {
@@ -209,23 +215,11 @@ fun LazyListScope.experienceSection(experiences: List<Experience>) {
 }
 
 @Composable
-fun ExperienceRow(experience: Experience) {
+fun ExperienceRow(experience: Experience, modifier: Modifier = Modifier) {
     val selectedSkills = remember { mutableStateListOf<Skill>() }
-
-    Card {
+    Card (modifier) {
         Column(modifier = Modifier.padding(12.dp)) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    experience.title,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1F)
-                )
-                Text(
-                    "${experience.startDate.year} - ${experience.endDate.year}"
-//            pluralStringResource(id = R.plurals.skill_years, experience.getYears(), experience.getYears())
-                )
-            }
-            Text(experience.company)
+            TitleAndCompanyRow(experience, Modifier.fillMaxWidth())
             SkillsRow(experience.skills.toSet(), selectedSkills = selectedSkills) {
                 if (selectedSkills.contains(it)) {
                     selectedSkills.remove(it)
@@ -244,7 +238,49 @@ fun ExperienceRow(experience: Experience) {
 @Composable
 fun PreviewExperienceRow() {
     PortfolioTheme {
-        ExperienceRow(experience = listOfExperience.first())
+        ExperienceRow(experience = listOfExperience.first(), Modifier.wrapContentHeight(align = Alignment.Top, false))
+    }
+}
+
+@Composable
+fun TitleAndCompanyRow(
+    experience: Experience,
+    modifier: Modifier = Modifier
+) {
+    Row {
+        Image(
+            painter = painterResource(id = R.drawable.quora_logo),
+            contentDescription = "Company logo",
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.weight(0.1F).layout { measurable, constraints ->
+                if (constraints.maxHeight == Constraints.Infinity) {
+                    layout(0, 0) {}
+                } else {
+                    val placeable = measurable.measure(constraints)
+                    layout(placeable.width, placeable.height) {
+                        placeable.place(0, 0)
+                    }
+                }
+            }
+        )
+        Column(modifier = Modifier.weight(1F)) {
+            Text(
+                experience.title,
+                fontWeight = FontWeight.Bold
+            )
+            Text(experience.company)
+        }
+        Text(
+            "${experience.startDate.year} - ${experience.endDate.year}"
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewTitleAndCompanyRow() {
+    PortfolioTheme {
+        TitleAndCompanyRow(experience = listOfExperience.first())
     }
 }
 
